@@ -1,0 +1,95 @@
+#include<stdio.h>
+#include<conio.h>
+#include<math.h>
+FILE *f,*fp;
+void main()
+{
+	int n, i, j, k, maxi, maxj, schimbat;
+	float a[50][50], b[50], x[50], temp, suma = 0, aux, max = 0, p[50];
+	errno_t err, err2;
+	err = fopen_s(&fp, "matrice.in", "r");
+	err2 = fopen_s(&f, "termeni.in", "r");
+	fscanf_s(fp, "%d", &n);
+	for(i = 1; i <= n; i++)
+		for(j = 1; j <= n; j++)
+			fscanf_s(fp, "%f", &a[i][j]);
+	for(i = 1; i <= n; i++)
+		fscanf_s(f, "%f", &b[i]);
+	for(k = 1; k <= n; k++)
+		p[k] = (float)k;	
+	for(k = 1; k <= n - 1; k++)
+	{
+		for(i = k; i <= n; i++)
+		{
+			for(j = k; j <= n; j++)
+			{
+				if(fabs(a[i][j]) > max)
+				{
+					max = fabs(a[i][j]);
+					maxi = i;
+					maxj = j;
+				}
+			}
+		}
+		if(a[maxi][maxj] == 0)
+		{
+			printf("Sistemul nu este compatibil determinat");
+			break;
+		}		
+		for(j = 1; j <= n; j++)
+		{
+			aux = a[maxi][j];
+			a[maxi][j] = a[k][j];
+			a[k][j] = aux;
+		}
+		aux = b[maxi];
+		b[maxi] = b[k];
+		b[k] = aux;
+		for(i = 1; i <= n; i++)
+		{
+			aux = a[i][maxj];
+			a[i][maxj] = a[i][k];
+			a[i][k] = aux;
+		}
+		aux = p[maxj];
+		p[maxj] = p[k];
+		p[k] = aux;
+		for(i = k + 1; i <= n; i++)
+		{
+			temp = a[i][k] / a[k][k];
+			for(j = k + 1; j <= n; j++)
+				a[i][j] -= temp * a[k][j];	
+			b[i] -= b[k] * temp;
+		}		
+	}
+	
+	if(a[n][n] == 0)
+		printf("Sistemul nu este compatibil determinat");
+	x[n] = b[n] / a[n][n];
+	for(i = n - 1; i >= 1; i--)
+	{
+		for(j = i + 1; j <= n; j++)
+			suma += a[i][j] * x[j];
+		x[i] = (1 / a[i][i]) * (b[i] - suma);
+	}
+	//Bubble Sort pentru vectorul p
+	do
+	{
+		schimbat=0;
+		for(i=0; i<n-1; i++)			//parcurgem vectorul
+			if(p[i] > p[i+1])			//daca valoarea i din vectorul a este
+			{						//mai mica decat cea de pe pozitia i+1
+				aux = p[i];			//interschimbare
+				p[i] = p[i+1];
+				p[i+1] = aux;
+				aux = x[i];			
+				x[i] = x[i+1];
+				x[i+1] = aux;
+				schimbat = 1;
+			}
+	}
+	while(schimbat);
+	for(i = 1; i <= n; i++)
+		printf("%f ", x[i]);
+	_getch();
+}

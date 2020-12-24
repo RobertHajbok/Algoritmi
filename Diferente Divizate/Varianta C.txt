@@ -1,0 +1,32 @@
+#include<stdio.h>
+#include<conio.h>
+int main()
+{
+	int m, k, l;
+	float d[50][50],a[50];
+	printf("Introduceti ordinul maxim al diferentei divizate: ");
+	scanf("%d", &m);	
+	for(l=0; l<=m; l++)
+		for(k=0; k<=m; k++)
+		{
+			if(l==0)
+			{
+				float x;
+				printf("x%d = ",k);
+				scanf("%f",&x);
+				a[k]=x;
+				d[k][l]=1/(1+x*x);
+			}
+			else
+				d[k][l]=(d[k+1][l-1]-d[k][l-1])/(a[k+l]-a[k]);
+		}	
+	
+	for(k=0; k<=m; k++)
+	{
+		for(l=0;l<=m-k;l++)
+			printf("%f ", d[k][l]);
+		printf("\n");
+	}	
+	getch();
+	return 0;
+}
